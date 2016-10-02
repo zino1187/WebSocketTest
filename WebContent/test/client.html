@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+
+</head>
+<body>
+<form name="form1" method="post">
+	<input type="text" id="msg">
+	<textarea id="area"></textarea>
+	<input type="button" value="메세지 전송" onClick="sendMsg()">
+</form>
+</body>
+</html>
+<script>
+	var webSocket = new WebSocket("ws://localhost:8080/Test/demo");
+
+	webSocket.onopen= function(message){
+		processOpen(message);
+	}
+	webSocket.onmessage=function(message){
+		processMessage(message);
+	}
+	webSocket.onclose=function(message){
+		processClose(message);
+	}
+	webSocket.onerror=function(message){
+		processError(message);
+	}
+	function processOpen(message){
+		area.value="server에 접속됨...\n";
+	}
+	function processMessage(message){
+		area.value+=message.data+"\n";
+	}
+	function sendMessage(){
+		webSocket.send(msg.value);	
+		area.value+="서버에 전송 : "+msg.value+"\n";
+		msg.value="";
+	}
+	
+	function processClose(message){
+		webSocket.send("client disconnected..");
+		area.value+="Server와 연결 종료됨\n";
+	}
+	function processError(message){
+		area.value+="에러발생..\n";
+	}
+	
+function sendMsg(){
+	var area=document.getElementById("area");
+	sendMessage();
+}
+</script>
